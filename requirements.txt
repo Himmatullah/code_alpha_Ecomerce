@@ -1,0 +1,4 @@
+Django==5.2.18
+mssql-django
+pyodbc
+Pillow
