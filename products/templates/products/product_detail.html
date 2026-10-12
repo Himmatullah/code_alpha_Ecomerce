@@ -1,0 +1,155 @@
+
+{% extends 'products/base.html' %}
+
+{% block title %}{{ product.name }} - Ecommerce Store{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'home' %}">Home</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                {{ product.name }}
+            </li>
+        </ol>
+    </nav>
+
+    <div class="row g-5">
+
+        <!-- PRODUCT IMAGE -->
+        <div class="col-md-6">
+
+            {% if product.image %}
+            <img
+                src="{{ product.image.url }}"
+                class="img-fluid rounded shadow-sm detail-image"
+                alt="{{ product.name }}"
+            >
+            {% else %}
+            <div class="product-image-placeholder detail-placeholder">
+                No Image Available
+            </div>
+            {% endif %}
+
+        </div>
+
+        <!-- PRODUCT INFORMATION -->
+        <div class="col-md-6">
+
+            <span class="badge bg-secondary mb-3">
+                {{ product.category.name }}
+            </span>
+
+            <h1 class="fw-bold">{{ product.name }}</h1>
+
+            <h2 class="text-primary my-4">
+                ${{ product.price }}
+            </h2>
+
+            <h5>Product Description</h5>
+
+            <p class="text-muted">
+                {{ product.description|linebreaksbr }}
+            </p>
+
+            <hr>
+
+            {% if product.stock > 0 %}
+            <p class="text-success fw-semibold">
+                Available: {{ product.stock }} units
+            </p>
+           
+<form
+    method="POST"
+    action="{% url 'add_to_cart' product.id %}"
+    class="mt-3"
+>
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label for="quantity" class="form-label fw-bold">
+            Quantity
+        </label>
+
+        <input
+            type="number"
+            name="quantity"
+            id="quantity"
+            value="1"
+            min="1"
+            max="{{ product.stock }}"
+            class="form-control"
+            style="max-width: 140px;"
+            required
+        >
+    </div>
+
+    <button
+        type="submit"
+        class="btn btn-primary btn-lg"
+    >
+        🛒 Add to Cart
+    </button>
+</form>
+
+            {% endif %}
+
+            <div class="mt-4">
+                <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                    ← Continue Shopping
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- RELATED PRODUCTS -->
+    {% if related_products %}
+    <section class="mt-5 pt-4">
+        <h3 class="fw-bold mb-4">Related Products</h3>
+
+        <div class="row g-4">
+            {% for item in related_products %}
+            <div class="col-sm-6 col-lg-3">
+                <div class="card product-card h-100 shadow-sm">
+
+                    {% if item.image %}
+                    <img
+                        src="{{ item.image.url }}"
+                        class="card-img-top product-image"
+                        alt="{{ item.name }}"
+                        loading="lazy"
+                    >
+                    {% else %}
+                    <div class="product-image-placeholder">
+                        No Image Available
+                    </div>
+                    {% endif %}
+
+                    <div class="card-body d-flex flex-column">
+                        <h5>{{ item.name }}</h5>
+                        <p class="text-primary fw-bold">
+                            ${{ item.price }}
+                        </p>
+                        <a
+                            href="{% url 'product_detail' item.id %}"
+                            class="btn btn-outline-primary mt-auto"
+                        >
+                            View Details
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+</div>
+
+{% endblock %}
